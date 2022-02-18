@@ -1,0 +1,61 @@
+import numpy as np
+from matplotlib import pyplot as plt
+import random
+
+l = 100
+p = 1/l
+
+def genetic_algorithm(l, p,n):
+    x = np.random.randint(2, size=(l,))
+    fitnesses = []
+    for i in range(n):
+        x_m = np.copy(x)
+        for j in range(0,len(x_m)):
+            if random.random() < p:
+                x_m[j] =1- x_m[j]
+    
+        if np.count_nonzero(x_m==1) > np.count_nonzero(x==1):
+            x = np.copy(x_m)
+        fitnesses.append(np.count_nonzero(x==1))
+    return fitnesses
+
+#A
+fitness = genetic_algorithm(l,p,1500)
+plt.plot(fitness)
+plt.xlabel("iterations")
+plt.ylabel("fitness")
+plt.title("(1+1)-GA counting ones")
+plt.show()
+################################################################
+#B
+for i in range(10):
+   plt.plot(genetic_algorithm(l,p,1500),label=i+1)
+
+plt.legend()
+plt.xlabel("iterations")
+plt.ylabel("fitness")
+plt.title("(1+1)-GA counting ones")
+plt.show()  
+################################################################
+#C
+def genetic_algorithm_c(l, p,n):
+    x = np.random.randint(2, size=(l,))
+    fitnesses = []
+    for i in range(n):
+        x_m = np.copy(x)
+        for j in range(0,len(x_m)):
+            if random.random() < p:
+                x_m[j] =1- x_m[j]
+    
+        x = np.copy(x_m)
+        fitnesses.append(np.count_nonzero(x==1))
+    return fitnesses
+
+for i in range(10):
+   plt.plot(genetic_algorithm_c(l,p,1500),label=i+1)
+plt.legend()
+plt.xlabel("iterations")
+plt.ylabel("fitness")
+plt.title("(1+1)-GA counting ones")
+plt.show()   
+

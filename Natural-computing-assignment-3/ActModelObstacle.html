@@ -125,7 +125,7 @@ function initializeGrid(){
 	if( !this.helpClasses["gm"] ){ this.addGridManipulator() }
 
 	// // Seed obstacles
-	let step = Math.floor(this.C.extents[0]/20)
+	let step = Math.floor(this.C.extents[0]/10)
 	for( var i = 1 ; i < this.C.extents[0] ; i += step ){
 		for( var j = 1 ; j < this.C.extents[1] ; j += step ){
 			this.gm.seedCellAt( 2, [i,j] )

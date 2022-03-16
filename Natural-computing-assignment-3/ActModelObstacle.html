@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ActModelObstacle</title>
+<style type="text/css">
+body{
+		font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
+		 Helvetica, Arial, "Lucida Grande", sans-serif;
+	 padding : 15px;
+	 max-width: 600px;
+	 margin: auto;
+}
+td {
+	 padding: 10px;
+	 vertical-align: top;
+}
+</style>
+
+
+<script src="./artistoo.js"></script>
+<script src="./fpsmeter.min.js"></script>
+<script>
+"use strict"
+
+
+/*	----------------------------------
+	CONFIGURATION SETTINGS
+	----------------------------------
+*/
+let config = {
+
+	// Grid settings
+	ndim : 2,
+	field_size : [200,200],
+	
+	// CPM parameters and configuration
+	conf : {
+		// Basic CPM parameters
+		torus : [true,true],						// Should the grid have linked borders?
+		seed : 1,							// Seed for random number generation.
+		T : 20,								// CPM temperature
+		
+		// Constraint parameters. 
+		// Mostly these have the format of an array in which each element specifies the
+		// parameter value for one of the cellkinds on the grid.
+		// First value is always cellkind 0 (the background) and is often not used.
+				
+		// Adhesion parameters:
+		J: [[0,20, 0], [20,0, 0], [0, 0, 0]],
+		
+		// VolumeConstraint parameters
+		LAMBDA_V: [0,50,100],					// VolumeConstraint importance per cellkind
+		V: [0,200,100],							// Target volume of each cellkind
+		
+		// PerimeterConstraint parameters
+		LAMBDA_P: [0,2,100],						// PerimeterConstraint importance per cellkind
+		P : [0,180,90],						// Target perimeter of each cellkind
+		
+		// ActivityConstraint parameters
+		LAMBDA_ACT : [0,200, 0],				// ActivityConstraint importance per cellkind
+		MAX_ACT : [0,20, 0],					// Activity memory duration per cellkind
+		ACT_MEAN : "geometric"				// Is neighborhood activity computed as a
+											// "geometric" or "arithmetic" mean?
+
+	},
+	
+	// Simulation setup and configuration
+	simsettings : {
+	
+		// Cells on the grid
+		NRCELLS : [100,50],						// Number of cells to seed for all
+											// non-background cellkinds.
+		// Runtime etc
+		BURNIN : 500,
+		RUNTIME : 1000,
+		RUNTIME_BROWSER : "Inf",
+		
+		// Visualization
+		CANVASCOLOR : "eaecef",
+		CELLCOLOR : ["000000", "FFFFFF"],
+		ACTCOLOR : [true, false],					// Should pixel activity values be displayed?
+		SHOWBORDERS : [false, true],				// Should cellborders be displayed?
+		zoom : 2,							// zoom in on canvas with this factor.
+		
+		// Output images
+		SAVEIMG : true,					// Should a png image of the grid be saved
+											// during the simulation?
+		IMGFRAMERATE : 5,					// If so, do this every <IMGFRAMERATE> MCS.
+		SAVEPATH : "output/img/ActModelObstacle",	// ... And save the image in this folder.
+		EXPNAME : "ActModelObstacle",					// Used for the filename of output images.
+		
+		// Output stats etc
+		STATSOUT : { browser: false, node: true }, // Should stats be computed?
+		LOGRATE : 10							// Output stats every <LOGRATE> MCS.
+
+	}
+}
+/*	---------------------------------- */
+let sim, meter
+
+
+function initialize(){
+	let custommethods = {
+	 	initializeGrid : initializeGrid}
+
+	sim = new CPM.Simulation( config, custommethods )
+
+
+	meter = new FPSMeter({left:"auto", right:"5px"})
+	step()
+}
+
+
+function step(){
+	sim.step()
+	meter.tick()
+	if( sim.conf["RUNTIME_BROWSER"] == "Inf" | sim.time+1 < sim.conf["RUNTIME_BROWSER"] ){
+		requestAnimationFrame( step )
+	}
+}
+
+/* The following custom methods will be added to the simulation object*/
+function initializeGrid(){
+
+	// add the initializer if not already there
+	if( !this.helpClasses["gm"] ){ this.addGridManipulator() }
+
+	// // Seed obstacles
+	let step = Math.floor(this.C.extents[0]/20)
+	for( var i = 1 ; i < this.C.extents[0] ; i += step ){
+		for( var j = 1 ; j < this.C.extents[1] ; j += step ){
+			this.gm.seedCellAt( 2, [i,j] )
+		}
+	}
+
+	//Seed migrating cells
+	for(var i=0; i < config["simsettings"]["NRCELLS"][0] ; i += 1){
+		this.gm.seedCell(1)
+	}
+}
+
+
+</script>
+</head>
+<body onload="initialize()">
+ 
+ <h1>The Act-CPM with obstacles</h1>
+ <p>Model of many migrating cells with obstacles.</p> 
+</body>
+</html>

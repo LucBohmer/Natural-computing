@@ -1,5 +1,5 @@
 Here we have 3 files for computing the AUC scores for this assignment. To Replicate our results you have to run these files with the 3 following commands in order.
 
-1. python intrusion_detec.py syscalls/snd-cert/snd-cert.train syscalls/snd-cert/snd-cert.3.test 5 (where you choose your train file test file and n gram size)
+1. python intrusion_detec.py syscalls/snd-cert/snd-cert.train syscalls/snd-cert/snd-cert.3.test 5 (where you choose your train file, test file and n gram size)
 2. java -jar negsel2.jar -l -c -n 5 -r 3 -g -alphabet file://syscalls/snd-cert/snd-cert.alpha -self syscalls/snd-cert/snd-cert.train.out < syscalls/snd-cert/snd-cert.3.test.out > output_intr.txt (here you have to set the r and the n and the alphabet is optional))
-3. python intrusion_detec2.py syscalls/snd-cert/snd-cert.3.test output_intr.txt 5 (here you have to choose to test file and the outputfile from the negsel2.jar program and set the n gram size again.)
+3. python intrusion_detec2.py syscalls/snd-cert/snd-cert.3.test output_intr.txt 5 (here you have to choose the test file and the outputfile from the negsel2.jar program and set the n gram size again.)

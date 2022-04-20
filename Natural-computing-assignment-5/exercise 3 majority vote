@@ -1,0 +1,45 @@
+def weighted_majority_vote(w):
+    strong_p = 0.8
+    weak_p = 0.6
+
+    strong_n = 1
+    weak_n = 10
+
+    weak_w = 1
+    strong_w = w
+    prob = [weak_p]* weak_n + [strong_p] * strong_n
+    inverse_prob = [round(1.0-x, 2) for x in prob]
+    combinations = list(product(*zip(prob, inverse_prob)))
+
+    filtered_combinations = []
+    for comb in combinations:
+        count = 0
+        for x in comb:
+            if x >= 0.5:
+                count += 1
+            if x == strong_p:
+                count += strong_w-1
+            if x == 1-strong_p:
+                count -= strong_w
+        if not (count < math.ceil((strong_n*strong_w+weak_n)/2)):
+            filtered_combinations.append(comb)
+
+
+    probability = 0
+    count = 0
+
+    for comb in filtered_combinations:
+        count += 1
+        probability += np.prod(comb)
+
+    return probability
+y = []
+for w in range(1,15):
+    y.append(weighted_majority_vote(w))
+    
+x = list(range(1,15))
+
+plt.plot(x,y)
+plt.ylabel("Probability")
+plt.xlabel("Weight for the strong classifier")
+plt.show()
